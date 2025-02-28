@@ -16,20 +16,23 @@ import { Input } from "@/components/ui/input";
 export default function ReportPage() {
   // Initialize attendance data as null (or empty array)
   const [attendanceData, setAttendanceData] = useState(null);
-  // State for search term and date filter
+  // State for search term, date filter, and status filter
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
   // File input reference for triggering the file dialog
   const fileInputRef = useRef(null);
 
-  // Filter attendance data based on search term and date
+  // Filter attendance data based on search term, date, and status
   const filteredData = attendanceData
     ? attendanceData.filter((record) => {
         const matchesName = record.name
           .toLowerCase()
           .includes(searchTerm.toLowerCase());
         const matchesDate = dateFilter ? record.date === dateFilter : true;
-        return matchesName && matchesDate;
+        const matchesStatus =
+          statusFilter === "All" || record.status === statusFilter;
+        return matchesName && matchesDate && matchesStatus;
       })
     : [];
 
@@ -97,6 +100,17 @@ export default function ReportPage() {
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
           />
+          {/* Status Filter Dropdown */}
+          <select
+            className="border rounded px-3 py-2"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="All">All</option>
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+            <option value="Late">Late</option>
+          </select>
         </div>
         <div className="flex gap-4">
           <Button
