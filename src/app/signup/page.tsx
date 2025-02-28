@@ -38,6 +38,7 @@ export default function SignUpPage() {
     setError(""); // Clear any previous errors
 
     // Call Supabase API for user signup
+    console.log(process.env.NODE_ENV);
     const redirectUrl =
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000/auth/callback"

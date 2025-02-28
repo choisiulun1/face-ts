@@ -58,7 +58,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [supabase.auth]); // Dependency array ensures this runs only once
+  }, []); // Dependency array ensures this runs only once
 
   if (pathname === "/login" || pathname === "/signup") {
     return <>{children}</>;
