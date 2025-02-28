@@ -23,9 +23,9 @@ export default function PhotosPage() {
       const res = await fetch("/api/list");
       if (!res.ok) throw new Error("Failed to fetch photos");
       const data = await res.json();
-      console.log(data);
       setPhotos(data.images);
     } catch (error) {
+      console.log(error);
       toast.error("Error fetching photos");
     }
   };
@@ -47,6 +47,7 @@ export default function PhotosPage() {
       toast.success("Uploaded successfully");
       fetchPhotos();
     } catch (error) {
+      console.log(error);
       toast.error("Upload failed");
     }
   };
@@ -63,6 +64,7 @@ export default function PhotosPage() {
       toast.success("Deleted successfully");
       fetchPhotos();
     } catch (error) {
+      console.log(error);
       toast.error("Delete failed");
     }
   };
