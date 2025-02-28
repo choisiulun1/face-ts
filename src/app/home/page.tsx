@@ -122,3 +122,7 @@
 //     </div>
 //   );
 // }
+// In page.tsx
+export default function HomePage() {
+  return <div>Welcome Home</div>;
+}
