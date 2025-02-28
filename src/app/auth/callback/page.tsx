@@ -28,6 +28,9 @@ export default function AuthCallback() {
         access_token,
         refresh_token,
       });
+
+      console.log("setSessionError", setSessionError);
+
       if (setSessionError) {
         setError("Failed to set session. Please try again.");
         router.push("/login");
@@ -41,12 +44,15 @@ export default function AuthCallback() {
         router.push("/login");
         return;
       }
+      console.log("getUserError", getUserError);
 
       // 4. Remove tokens from URL for security
       window.history.replaceState(null, "", "/auth/callback");
 
       // 5. Redirect to dashboard after successful authentication
-      router.push("/dashboard");
+      router.replace("/dashboard"); // Replaces the current route
+      window.location.href = "/dashboard"; // Forces a full page reload
+      console.log("no redirect");
     };
 
     handleAuth();

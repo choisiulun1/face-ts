@@ -27,14 +27,14 @@ export async function updateSession(request: NextRequest) {
       },
     },
   );
-  console.log("API URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
   // Get user session
   const {
     data: { user },
   } = await supabase.auth.getUser();
   // Define protected routes
-
+  console.log("middleware");
+  console.log(user);
   const protectedRoutes = ["/dashboard", "/profile", "/settings"];
 
   const isProtectedRoute = protectedRoutes.some((route) =>
