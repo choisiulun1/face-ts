@@ -38,11 +38,16 @@ export default function SignUpPage() {
     setError(""); // Clear any previous errors
 
     // Call Supabase API for user signup
+    const redirectUrl =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:3000/auth/callback"
+        : "https://face-ts-choisiulun1s-projects.vercel.app/auth/callback";
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: "http://localhost:3000/auth/callback",
+        emailRedirectTo: redirectUrl,
       },
     });
 
