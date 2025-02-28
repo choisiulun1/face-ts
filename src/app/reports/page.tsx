@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -14,30 +14,28 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function ReportPage() {
-  // Sample attendance data; replace with dynamic data as needed.
-  const attendanceData = [
-    { id: 1, name: "John Doe", date: "2023-09-01", status: "Present" },
-    { id: 2, name: "Jane Smith", date: "2023-09-01", status: "Absent" },
-    { id: 3, name: "Alice Johnson", date: "2023-09-02", status: "Present" },
-    { id: 4, name: "Bob Brown", date: "2023-09-03", status: "Late" },
-    // Add more sample data as needed.
-  ];
-
+  // Initialize attendance data as null (or empty array)
+  const [attendanceData, setAttendanceData] = useState(null);
   // State for search term and date filter
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+  // File input reference for triggering the file dialog
+  const fileInputRef = useRef(null);
 
   // Filter attendance data based on search term and date
-  const filteredData = attendanceData.filter((record) => {
-    const matchesName = record.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesDate = dateFilter ? record.date === dateFilter : true;
-    return matchesName && matchesDate;
-  });
+  const filteredData = attendanceData
+    ? attendanceData.filter((record) => {
+        const matchesName = record.name
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+        const matchesDate = dateFilter ? record.date === dateFilter : true;
+        return matchesName && matchesDate;
+      })
+    : [];
 
   // Function to export the filtered data to CSV
   const exportToCsv = () => {
+    if (!attendanceData) return;
     const headers = ["ID", "Name", "Date", "Status"];
     const csvRows = [headers.join(",")];
     filteredData.forEach((record) => {
@@ -54,6 +52,29 @@ export default function ReportPage() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+
+  // Function to handle the CSV file import
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const text = e.target.result;
+      const lines = text.split("\n").filter((line) => line.trim() !== "");
+      // Assuming the first line is header: "ID,Name,Date,Status"
+      const data = lines.slice(1).map((line) => {
+        const values = line.split(",").map((val) => val.trim());
+        return {
+          id: values[0],
+          name: values[1],
+          date: values[2],
+          status: values[3],
+        };
+      });
+      setAttendanceData(data);
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -77,33 +98,57 @@ export default function ReportPage() {
             onChange={(e) => setDateFilter(e.target.value)}
           />
         </div>
-        <Button variant="default" onClick={exportToCsv}>
-          Export Report
-        </Button>
+        <div className="flex gap-4">
+          <Button
+            variant="default"
+            onClick={exportToCsv}
+            disabled={!attendanceData}
+          >
+            Export Report
+          </Button>
+          <Button
+            variant="default"
+            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+          >
+            Import Report
+          </Button>
+          {/* Hidden file input for CSV import */}
+          <input
+            type="file"
+            accept=".csv"
+            ref={fileInputRef}
+            onChange={handleImport}
+            style={{ display: "none" }}
+          />
+        </div>
       </Card>
 
       {/* Attendance Table */}
       <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredData.map((record) => (
-              <TableRow key={record.id}>
-                <TableCell>{record.id}</TableCell>
-                <TableCell>{record.name}</TableCell>
-                <TableCell>{record.date}</TableCell>
-                <TableCell>{record.status}</TableCell>
+        {attendanceData ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredData.map((record) => (
+                <TableRow key={record.id}>
+                  <TableCell>{record.id}</TableCell>
+                  <TableCell>{record.name}</TableCell>
+                  <TableCell>{record.date}</TableCell>
+                  <TableCell>{record.status}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <p className="p-4">No data available. Please import a CSV file.</p>
+        )}
       </Card>
     </div>
   );
