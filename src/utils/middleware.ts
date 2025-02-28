@@ -35,7 +35,13 @@ export async function updateSession(request: NextRequest) {
   // Define protected routes
   console.log("middleware");
   console.log(user);
-  const protectedRoutes = ["/dashboard", "/profile", "/settings"];
+  const protectedRoutes = [
+    "/dashboard",
+    "/profile",
+    "/settings",
+    "/reports",
+    "/photos",
+  ];
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     request.nextUrl.pathname.startsWith(route),
