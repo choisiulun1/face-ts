@@ -84,13 +84,16 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex gap-6">
-            <NavLink href="/" pathname={pathname}>
-              Home
-            </NavLink>
+            {/*<NavLink href="/home" pathname={pathname}>*/}
+            {/*  Home*/}
+            {/*</NavLink>*/}
             <NavLink href="/dashboard" pathname={pathname}>
               Dashboard
             </NavLink>
-            <NavLink href="/reports" pathname={pathname}>
+            <NavLink href="/photos" pathname={pathname}>
+              Photos
+            </NavLink>
+            <NavLink href={"/reports"} pathname={pathname}>
               Reports
             </NavLink>
           </div>
@@ -139,7 +142,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
         {menuOpen && (
           <div className="md:hidden bg-white border-t shadow-sm py-2">
             <div className="flex flex-col items-center space-y-3">
-              <NavLink href="/" pathname={pathname} onClick={toggleMenu}>
+              <NavLink href="/home" pathname={pathname} onClick={toggleMenu}>
                 Home
               </NavLink>
               <NavLink
@@ -149,8 +152,8 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
               >
                 Dashboard
               </NavLink>
-              <NavLink href="/reports" pathname={pathname} onClick={toggleMenu}>
-                Reports
+              <NavLink href="/photos" pathname={pathname} onClick={toggleMenu}>
+                Faces
               </NavLink>
               <button className="text-red-500 mt-2" onClick={handleLogout}>
                 Logout

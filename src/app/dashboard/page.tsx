@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { BarChart, CalendarCheck, Clock, Users } from "lucide-react";
-
 export default function Dashboard() {
   // Fabricated attendance data
   const attendanceSummary = {

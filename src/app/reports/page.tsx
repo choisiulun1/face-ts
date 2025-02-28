@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -17,21 +18,33 @@ export default function ReportPage() {
   const attendanceData = [
     { id: 1, name: "John Doe", date: "2023-09-01", status: "Present" },
     { id: 2, name: "Jane Smith", date: "2023-09-01", status: "Absent" },
-    { id: 3, name: "Alice Johnson", date: "2023-09-01", status: "Present" },
-    { id: 4, name: "Bob Brown", date: "2023-09-01", status: "Late" },
+    { id: 3, name: "Alice Johnson", date: "2023-09-02", status: "Present" },
+    { id: 4, name: "Bob Brown", date: "2023-09-03", status: "Late" },
+    // Add more sample data as needed.
   ];
 
-  // Function to convert data to CSV and trigger file download.
+  // State for search term and date filter
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+
+  // Filter attendance data based on search term and date
+  const filteredData = attendanceData.filter((record) => {
+    const matchesName = record.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesDate = dateFilter ? record.date === dateFilter : true;
+    return matchesName && matchesDate;
+  });
+
+  // Function to export the filtered data to CSV
   const exportToCsv = () => {
     const headers = ["ID", "Name", "Date", "Status"];
-    // Build CSV rows: first row as header then data rows.
     const csvRows = [headers.join(",")];
-    attendanceData.forEach((record) => {
+    filteredData.forEach((record) => {
       const row = [record.id, record.name, record.date, record.status];
       csvRows.push(row.join(","));
     });
     const csvString = csvRows.join("\n");
-    // Create a Blob from the CSV string and generate a download link.
     const blob = new Blob([csvString], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -48,8 +61,22 @@ export default function ReportPage() {
       <h1 className="text-3xl font-bold mb-6">Attendance Report</h1>
 
       {/* Controls */}
-      <Card className="p-4 mb-6 flex items-center justify-between">
-        <Input placeholder="Search by name..." className="max-w-xs" />
+      <Card className="p-4 mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex gap-4">
+          <Input
+            placeholder="Search by name..."
+            className="max-w-xs"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Input
+            type="date"
+            placeholder="Filter by date"
+            className="max-w-xs"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+          />
+        </div>
         <Button variant="default" onClick={exportToCsv}>
           Export Report
         </Button>
@@ -67,7 +94,7 @@ export default function ReportPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {attendanceData.map((record) => (
+            {filteredData.map((record) => (
               <TableRow key={record.id}>
                 <TableCell>{record.id}</TableCell>
                 <TableCell>{record.name}</TableCell>
