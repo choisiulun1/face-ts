@@ -13,15 +13,23 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+// Define the structure of an attendance record
+type AttendanceRecord = {
+  id: string;
+  name: string;
+  date: string;
+  status: string;
+};
+
 export default function ReportPage() {
-  // Initialize attendance data as null (or empty array)
-  const [attendanceData, setAttendanceData] = useState(null);
-  // State for search term, date filter, and status filter
+  // Explicitly type attendanceData as an array of AttendanceRecord or null
+  const [attendanceData, setAttendanceData] = useState<
+    AttendanceRecord[] | null
+  >(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  // File input reference for triggering the file dialog
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Filter attendance data based on search term, date, and status
   const filteredData = attendanceData
@@ -58,14 +66,13 @@ export default function ReportPage() {
   };
 
   // Function to handle the CSV file import
-  const handleImport = (event) => {
-    const file = event.target.files[0];
+  const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = function (e) {
-      const text = e.target.result;
+      const text = e.target?.result as string;
       const lines = text.split("\n").filter((line) => line.trim() !== "");
-      // Assuming the first line is header: "ID,Name,Date,Status"
       const data = lines.slice(1).map((line) => {
         const values = line.split(",").map((val) => val.trim());
         return {
@@ -73,7 +80,7 @@ export default function ReportPage() {
           name: values[1],
           date: values[2],
           status: values[3],
-        };
+        } as AttendanceRecord;
       });
       setAttendanceData(data);
     };
@@ -86,7 +93,7 @@ export default function ReportPage() {
 
       {/* Controls */}
       <Card className="p-4 mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap">
           <Input
             placeholder="Search by name..."
             className="max-w-xs"
@@ -122,7 +129,7 @@ export default function ReportPage() {
           </Button>
           <Button
             variant="default"
-            onClick={() => fileInputRef.current && fileInputRef.current.click()}
+            onClick={() => fileInputRef.current?.click()}
           >
             Import Report
           </Button>
